@@ -43,6 +43,16 @@ namespace SalesWebMvc.Controllers
 
         public IActionResult Create(Seller seller)
         {
+
+            //Antes de inserir o seller, a condição abaixo valida o campo no nivel do servidor
+            if (!ModelState.IsValid)
+            {
+                var departments = _departmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+               
+            }
+            // Se os campos forem validados execute o codigo abaixo
             _sellerService.insert(seller);
             return RedirectToAction(nameof(Index));
 
@@ -121,7 +131,16 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int? id, Seller seller)
         {
-            if(id != seller.Id)
+            //Antes de inserir o seller, a condição abaixo valida o campo no nivel do servidor
+            if (!ModelState.IsValid)
+            {
+                var departments = _departmentService.FindAll();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);
+            }
+
+            // Se os campos forem validados execute o codigo abaixo
+            if (id != seller.Id)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
             }
