@@ -50,10 +50,10 @@ namespace SalesWebMvc.Controllers
                 var departments = await _departmentService.FindAllAsync();
                 var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
                 return View(viewModel);
-               
+
             }
             // Se os campos forem validados execute o codigo abaixo
-            await _sellerService.InsertAsync(seller);  
+            await _sellerService.InsertAsync(seller);
             return RedirectToAction(nameof(Index));
 
 
@@ -63,13 +63,13 @@ namespace SalesWebMvc.Controllers
         {
             if (id == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not provided"});
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
 
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value);
 
-            if(obj == null)
+            if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
@@ -81,9 +81,16 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
+            try
+            {
+                await _sellerService.RemoveAsync(id);
+                return RedirectToAction(nameof(Index));
+            }catch(IntegrityExcetion e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message}); 
+            }
 
-            await _sellerService.RemoveAsync(id);
-            return RedirectToAction(nameof(Index));
+
 
         }
 
@@ -116,7 +123,7 @@ namespace SalesWebMvc.Controllers
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value);
-            if(obj == null)
+            if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
@@ -150,7 +157,7 @@ namespace SalesWebMvc.Controllers
                 await _sellerService.UpdateAsync(seller);
                 return RedirectToAction(nameof(Index));
             }
-            catch(ApplicationException e)
+            catch (ApplicationException e)
             {
 
                 return RedirectToAction(nameof(Error), new { message = e.Message });
